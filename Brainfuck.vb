@@ -25,9 +25,17 @@
             If Not ForceStop Then
                 Select Case Code.Chars(index)
                     Case ">"
-                        CellPointer += 1
+                        Try
+                            CellPointer += 1
+                        Catch ex As OverflowException
+                            CellPointer = 29999
+                        End Try
                     Case "<"
-                        CellPointer -= 1
+                        Try
+                            CellPointer -= 1
+                        Catch ex As OverflowException
+                            CellPointer = 0
+                        End Try
                     Case "+"
                         Try
                             Cell(CellPointer) += 1
@@ -35,7 +43,11 @@
                             Cell(CellPointer) = -128
                         End Try
                     Case "-"
-                        Cell(CellPointer) -= 1
+                        Try
+                            Cell(CellPointer) -= 1
+                        Catch ex As OverflowException
+                            Cell(CellPointer) = 127
+                        End Try
                     Case "."
                         MainForm.BrainfuckOutput(Cell(CellPointer))
                     Case ","
