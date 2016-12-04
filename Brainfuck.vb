@@ -19,40 +19,50 @@
         Dim CellPointer As UInteger = 0
         Dim LoopDepth As Integer = 0
         Dim LoopJump(1000) As Integer
+        Dim InitialComment As Boolean = False
         Dim SkipDelay As Boolean = False
 
         For index = 0 To CodeLength - 1
             If Not ForceStop Then
                 Select Case Code.Chars(index)
                     Case ">"
-                        Try
-                            CellPointer += 1
-                        Catch ex As OverflowException
-                            CellPointer = 29999
-                        End Try
+                        If Not InitialComment Then
+                            Try
+                                CellPointer += 1
+                            Catch ex As OverflowException
+                                CellPointer = 29999
+                            End Try
+                        End If
                     Case "<"
-                        Try
-                            CellPointer -= 1
-                        Catch ex As OverflowException
-                            CellPointer = 0
-                        End Try
+                        If Not InitialComment Then
+                            Try
+                                CellPointer -= 1
+                            Catch ex As OverflowException
+                                CellPointer = 0
+                            End Try
+                        End If
                     Case "+"
-                        Try
-                            Cell(CellPointer) += 1
-                        Catch ex As OverflowException
-                            Cell(CellPointer) = -128
-                        End Try
+                        If Not InitialComment Then
+                            Try
+                                Cell(CellPointer) += 1
+                            Catch ex As OverflowException
+                                Cell(CellPointer) = -128
+                            End Try
+                        End If
                     Case "-"
-                        Try
-                            Cell(CellPointer) -= 1
-                        Catch ex As OverflowException
-                            Cell(CellPointer) = 127
-                        End Try
+                        If Not InitialComment Then
+                            Try
+                                Cell(CellPointer) -= 1
+                            Catch ex As OverflowException
+                                Cell(CellPointer) = 127
+                            End Try
+                        End If
                     Case "."
-                        MainForm.BrainfuckOutput(Cell(CellPointer))
+                        If Not InitialComment Then MainForm.BrainfuckOutput(Cell(CellPointer))
                     Case ","
-                        Cell(CellPointer) = MainForm.BrainfuckInput()
+                        If Not InitialComment Then Cell(CellPointer) = MainForm.BrainfuckInput()
                     Case "["
+                        If index = 0 Then InitialComment = True
                         LoopDepth += 1
                         LoopJump(LoopDepth) = index
                     Case "]"
@@ -61,11 +71,12 @@
                         Else
                             index = LoopJump(LoopDepth)
                         End If
+                        If LoopDepth = 0 Then InitialComment = False
                     Case Else
                         SkipDelay = True
                 End Select
 
-                If Not SkipDelay Then
+                If Not SkipDelay And Not InitialComment Then
                     MainForm.BrainfuckPointer(CellPointer, Cell(CellPointer))
                     Debug.WriteLine("Cell: " & CStr(CellPointer))
                     Debug.WriteLine("Value: " & CStr(Cell(CellPointer)))
@@ -77,7 +88,6 @@
                 Exit Sub
             End If
         Next
-
 
     End Sub
 
